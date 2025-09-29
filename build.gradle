@@ -16,6 +16,22 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+	maven {
+		name = "Modrinth"
+		url = uri("https://api.modrinth.com/maven")
+		content {
+			includeGroup("maven.modrinth")
+		}
+	}
+
+	maven {
+		url = uri("https://maven.wispforest.io")
+	}
+
+	maven {
+		name = "Ladysnake Mods"
+		url = uri("https://maven.ladysnake.org/releases")
+	}
 }
 
 loom {
@@ -38,7 +54,17 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	
+
+	modImplementation "io.wispforest:owo-lib:0.11.2+1.20"
+
+	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.2.3"
+	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.2.3" // for players
+	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-scoreboard:5.2.3" // for scoreboard/global
+
+	modImplementation "maven.modrinth:numismatic-overhaul:0.2.14+1.20"
+
+	modImplementation("com.electronwill.night-config:toml:3.6.7")
+	include("com.electronwill.night-config:toml:3.6.7")
 }
 
 processResources {
@@ -50,7 +76,7 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = 17
+	it.options.release = 21
 }
 
 java {
@@ -59,8 +85,8 @@ java {
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 
-	sourceCompatibility = JavaVersion.VERSION_17
-	targetCompatibility = JavaVersion.VERSION_17
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {

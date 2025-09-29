@@ -1,7 +1,10 @@
 package madmike.numismaticgts;
 
-import net.fabricmc.api.ModInitializer;
+import madmike.numismaticgts.command.GTSCommand;
+import madmike.numismaticgts.events.TradeEvents;
+import madmike.numismaticgts.net.ServerReceiver;
 
+import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,10 +18,15 @@ public class NumismaticGTS implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		// This code runs as soon as Minecraft is in a mod-load-ready state.
-		// However, some things (like resources) may still be uninitialized.
-		// Proceed with mild caution.
 
-		LOGGER.info("Hello Fabric world!");
+		NumismaticGTSConfig.load();
+
+		GTSCommand.register();
+
+		ServerReceiver.register();
+
+		TradeEvents.register();
+
+		LOGGER.info("Numismatic GTS initialized");
 	}
 }

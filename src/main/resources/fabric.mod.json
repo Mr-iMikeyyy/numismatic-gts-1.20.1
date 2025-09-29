@@ -3,9 +3,9 @@
 	"id": "numismatic-gts",
 	"version": "${version}",
 	"name": "Numismatic GTS",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "A Global trading System for Numismatic Overhaul",
 	"authors": [
-		"Me!"
+		"Mad Mike"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
@@ -20,22 +20,30 @@
 		],
 		"client": [
 			"madmike.numismaticgts.NumismaticGTSClient"
+		],
+		"cardinal-components-scoreboard": [
+			"madmike.numismaticgts.NumismaticGTSComponents"
+		],
+		"cardinal-components-entity": [
+			"madmike.numismaticgts.NumismaticGTSComponents"
 		]
 	},
-	"mixins": [
-		"numismatic-gts.mixins.json",
-		{
-			"config": "numismatic-gts.client.mixins.json",
-			"environment": "client"
-		}
-	],
 	"depends": {
-		"fabricloader": ">=0.17.2",
+		"fabricloader": ">=0.16.14",
 		"minecraft": "~1.20.1",
 		"java": ">=17",
 		"fabric-api": "*"
 	},
 	"suggests": {
 		"another-mod": "*"
+	},
+	"custom": {
+		"cardinal-components": [
+			"numismatic-gts:store_slots",
+			"numismatic-gts:offers",
+			"numismatic-gts:offline_sales",
+			"numismatic-gts:total_sales",
+			"numismatic-gts:player_names"
+		]
 	}
 }

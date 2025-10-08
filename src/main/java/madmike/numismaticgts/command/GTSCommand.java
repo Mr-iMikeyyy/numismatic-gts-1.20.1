@@ -23,7 +23,9 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import madmike.numismaticgts.NumismaticGTSComponents;
 import madmike.numismaticgts.NumismaticGTSConfig;
+import madmike.numismaticgts.components.scoreboard.PlayerNamesComponent;
 import madmike.numismaticgts.data.Offer;
+import madmike.numismaticgts.net.TradeScreenRefreshS2CSender;
 import madmike.numismaticgts.util.CurrencyUtil;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.item.ItemStack;
@@ -136,10 +138,12 @@ public class GTSCommand {
                     return 1;
                 }
 
+                PlayerNamesComponent pnc = NumismaticGTSComponents.PLAYER_NAMES.get(sb);
+
                 player.sendMessage(Text.literal("Top 10 Sellers:"), false);
                 for (int i = 0; i < top.size(); i++) {
                     var entry = top.get(i);
-                    String name = NumismaticGTSComponents.PLAYER_NAMES.get(sb).get(entry.getKey());
+                    String name = pnc.resolve(entry.getKey());
                     String priceStr = CurrencyUtil.formatPrice(entry.getValue()).getString();
                     String line = String.format("%d. %s - %s", i + 1, name, priceStr);
                     player.sendMessage(Text.literal(line), false);

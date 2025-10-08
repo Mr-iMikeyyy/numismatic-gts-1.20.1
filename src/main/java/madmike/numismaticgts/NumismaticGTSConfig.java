@@ -24,19 +24,38 @@ import net.fabricmc.loader.api.FabricLoader;
 import java.nio.file.Path;
 
 public class NumismaticGTSConfig {
-    private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("numismatic-gts.toml");
+    private static final Path CONFIG_PATH = FabricLoader.getInstance()
+            .getConfigDir().resolve("numismatic-gts.toml");
 
     public static int maxStoreSlotsPerPlayer;
     public static int startingStoreSlotsPerPlayer;
 
     public static void load() {
-        CommentedFileConfig config = CommentedFileConfig.builder(CONFIG_PATH).autosave().build();
+        // Load or create the config
+        CommentedFileConfig config = CommentedFileConfig.builder(CONFIG_PATH)
+                .autosave()
+                .sync()
+                .writingMode(com.electronwill.nightconfig.core.io.WritingMode.REPLACE)
+                .build();
+
         config.load();
 
-        config.setComment("maxStoreSlotsPerPlayer", "Maximum number of item slots one can earn in the store");
-        maxStoreSlotsPerPlayer = config.getOrElse("maxStoreSlotsPerPlayer", 30);
+        // If values don't exist, write defaults
+        if (!config.contains("maxStoreSlotsPerPlayer")) {
+            config.setComment("maxStoreSlotsPerPlayer", "Maximum number of item slots one can earn in the store");
+            config.set("maxStoreSlotsPerPlayer", 30);
+        }
+        if (!config.contains("startingStoreSlotsPerPlayer")) {
+            config.setComment("startingStoreSlotsPerPlayer", "Number of store slots players start with");
+            config.set("startingStoreSlotsPerPlayer", 5);
+        }
 
-        config.setComment("startingStoreSlotsPerPlayer", "Number of store slots players start with");
-        startingStoreSlotsPerPlayer = config.getOrElse("startingStoreSlotsPerPlayer", 5);
+        // Save changes to disk (autosave may not trigger on first creation)
+        config.save();
+        config.close();
+
+        // Load into memory
+        maxStoreSlotsPerPlayer = config.getInt("maxStoreSlotsPerPlayer");
+        startingStoreSlotsPerPlayer = config.getInt("startingStoreSlotsPerPlayer");
     }
 }

@@ -28,12 +28,12 @@ import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.container.ScrollContainer;
 import io.wispforest.owo.ui.core.*;
 import madmike.numismaticgts.NumismaticGTSComponents;
+import madmike.numismaticgts.components.scoreboard.PlayerNamesComponent;
 import madmike.numismaticgts.data.Offer;
 import madmike.numismaticgts.net.packets.BuyOfferC2SPacket;
 import madmike.numismaticgts.net.packets.RemoveOfferC2SPacket;
 import madmike.numismaticgts.util.CurrencyUtil;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.text.Text;
@@ -159,7 +159,7 @@ public class TradingScreen extends BaseOwoScreen<FlowLayout> {
         if (offersBySeller.isEmpty()) return tabs;
 
         // Resolve names via the PlayerNamesComponent (server-synced cache)
-        var names = NumismaticGTSComponents.PLAYER_NAMES.get(sb);
+        PlayerNamesComponent names = NumismaticGTSComponents.PLAYER_NAMES.get(sb);
 
         // Optional: sort tabs by display name
         List<UUID> sellerIds = new ArrayList<>(offersBySeller.keySet());
@@ -171,6 +171,34 @@ public class TradingScreen extends BaseOwoScreen<FlowLayout> {
         }
 
         return tabs;
+    }
+
+    private void rebuildTabs() {
+        tabBarContents.clearChildren();
+
+        List<TradingScreenTab> tabs = buildTabs();
+
+        if (tabs.isEmpty()) {
+            tabBarContents.child(Components.label(Text.literal("No tabs to show")));
+            return;
+        }
+
+        // Ensure currentTab is valid; fallback to the first tab
+        if (currentTab == null || tabs.stream().noneMatch(t -> t.id().equals(currentTab.id()))) {
+            currentTab = tabs.get(0);
+        }
+
+        for (TradingScreenTab tab : tabs) {
+            boolean isSelected = currentTab != null && tab.id().equals(currentTab.id());
+            Component button = Components.button(Text.literal(tab.name()), b -> switchTab(tab));
+
+            // Add a simple visual indicator for the active tab
+//            if (isSelected) {
+//                button.tooltip(Text.literal("Currently viewing this tab"));
+//            }
+
+            tabBarContents.child(button);
+        }
     }
 
     private void switchTab(TradingScreenTab tab) {
@@ -254,6 +282,7 @@ public class TradingScreen extends BaseOwoScreen<FlowLayout> {
 
     public void refresh() {
         if (currentTab != null) {
+            rebuildTabs();
             switchTab(currentTab);
             rebuildWallet();
         }

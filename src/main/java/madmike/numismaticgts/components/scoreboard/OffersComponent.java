@@ -63,6 +63,7 @@ public class OffersComponent implements ComponentV3, AutoSyncedComponent {
     /** Add an offer under its seller's list. */
     public void addOffer(Offer offer) {
         offers.computeIfAbsent(offer.getSellerId(), k -> new ArrayList<>()).add(offer);
+        NumismaticGTSComponents.OFFERS.sync(provider);
         TradeScreenRefreshS2CSender.sendRefreshToAll(server);
     }
 
@@ -89,6 +90,7 @@ public class OffersComponent implements ComponentV3, AutoSyncedComponent {
             if (list.isEmpty()) offers.remove(sellerId);
         }
 
+        NumismaticGTSComponents.OFFERS.sync(provider);
         TradeScreenRefreshS2CSender.sendRefreshToAll(server);
     }
 
@@ -134,6 +136,8 @@ public class OffersComponent implements ComponentV3, AutoSyncedComponent {
 
         // remove the purchased listing
         removeOffer(offerId);
+
+        NumismaticGTSComponents.OFFERS.sync(provider);
 
         buyer.sendMessage(Text.literal("Purchase successful!").formatted(Formatting.GOLD), false);
     }

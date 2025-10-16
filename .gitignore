@@ -40,3 +40,9 @@ Thumbs.db
 # Gradle caches
 .gradle/
 /loom-cache/
+
+# --- Keep the Gradle Wrapper (needed to run builds without a global Gradle) ---
+!/gradlew
+!/gradlew.bat
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties

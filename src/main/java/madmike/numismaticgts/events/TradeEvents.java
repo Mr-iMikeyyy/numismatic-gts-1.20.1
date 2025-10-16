@@ -19,43 +19,46 @@
 package madmike.numismaticgts.events;
 
 import com.glisco.numismaticoverhaul.ModComponents;
+import com.glisco.numismaticoverhaul.currency.CurrencyComponent;
 import madmike.numismaticgts.NumismaticGTSComponents;
+import madmike.numismaticgts.components.scoreboard.OfflineSalesComponent;
 import madmike.numismaticgts.util.CurrencyUtil;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.UUID;
 
+import static madmike.numismaticgts.net.TradePacketIds.CLIENT_READY;
+
 public class TradeEvents {
-    public static void register() {
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            ServerPlayerEntity player = handler.getPlayer();
-            UUID playerId = player.getUuid();
+    public static void onClientReady(ServerPlayerEntity player, MinecraftServer server) {
+        UUID playerId = player.getUuid();
 
-            String name = player.getGameProfile().getName();
-            if (name == null || name.isEmpty()) name = player.getName().getString(); // fallback to display name
-            NumismaticGTSComponents.PLAYER_NAMES.get(server.getScoreboard()).put(playerId, name);
+        String name = player.getGameProfile().getName();
+        if (name == null || name.isEmpty()) name = player.getName().getString(); // fallback to display name
+        NumismaticGTSComponents.PLAYER_NAMES.get(server.getScoreboard()).put(playerId, name);
 
-            var offlineSales = NumismaticGTSComponents.OFFLINE_SALES.get(server.getScoreboard());
-            long totalProfit = offlineSales.getSales(playerId); // now a single long
+        OfflineSalesComponent offlineSales = NumismaticGTSComponents.OFFLINE_SALES.get(server.getScoreboard());
+        long totalProfit = offlineSales.getSales(playerId); // now a single long
 
-            if (totalProfit > 0) {
-                // Credit the player's wallet
-                var wallet = ModComponents.CURRENCY.get(player);
-                wallet.modify(totalProfit);
+        if (totalProfit > 0) {
+            // Credit the player's wallet
+            CurrencyComponent wallet = ModComponents.CURRENCY.get(player);
+            wallet.modify(totalProfit);
 
-                // Notify player
-                String coinsStr = CurrencyUtil.formatPrice(totalProfit).getString();
-                player.sendMessage(
-                        Text.literal("You made " + coinsStr + " while you were away!").formatted(Formatting.GOLD),
-                        false
-                );
+            // Notify player
+            String coinsStr = CurrencyUtil.formatPrice(totalProfit).getString();
+            player.sendMessage(
+                    Text.literal("You made " + coinsStr + " while you were away!").formatted(Formatting.GOLD),
+                    false
+            );
 
-                // Clear the stored offline sales total
-                offlineSales.clearSales(playerId);
-            }
-        });
+            // Clear the stored offline sales total
+            offlineSales.clearSales(playerId);
+        }
     }
 }

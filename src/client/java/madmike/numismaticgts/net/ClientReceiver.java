@@ -22,7 +22,7 @@ import madmike.numismaticgts.gui.TradingScreen;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.screen.Screen;
 
-import static madmike.numismaticgts.net.packets.TradePacketIds.REFRESH_TRADE_SCREEN;
+import static madmike.numismaticgts.net.TradePacketIds.REFRESH_TRADE_SCREEN;
 
 public class ClientReceiver {
     public static void register() {

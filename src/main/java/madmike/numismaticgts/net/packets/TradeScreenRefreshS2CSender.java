@@ -18,12 +18,24 @@
 
 package madmike.numismaticgts.net.packets;
 
-import madmike.numismaticgts.NumismaticGTS;
-import net.minecraft.util.Identifier;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-public class TradePacketIds {
-    public static final Identifier REMOVE_OFFER = new Identifier(NumismaticGTS.MOD_ID, "remove_offer");
-    public static final Identifier BUY_OFFER = new Identifier(NumismaticGTS.MOD_ID, "buy_offer");
+import static madmike.numismaticgts.net.TradePacketIds.REFRESH_TRADE_SCREEN;
 
-    public static final Identifier REFRESH_TRADE_SCREEN = new Identifier(NumismaticGTS.MOD_ID, "refresh_trades");
+public class TradeScreenRefreshS2CSender {
+
+    public static void sendRefresh(ServerPlayerEntity player) {
+        PacketByteBuf buf = PacketByteBufs.create();
+        ServerPlayNetworking.send(player, REFRESH_TRADE_SCREEN, buf);
+    }
+
+    public static void sendRefreshToAll(MinecraftServer server) {
+        for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+            sendRefresh(player);
+        }
+    }
 }

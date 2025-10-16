@@ -25,8 +25,6 @@ public class NumismaticGTS implements ModInitializer {
 
 		ServerReceiver.register();
 
-		TradeEvents.register();
-
 		LOGGER.info("Numismatic GTS initialized");
 	}
 }

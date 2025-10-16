@@ -24,7 +24,7 @@ import net.minecraft.network.PacketByteBuf;
 
 import java.util.UUID;
 
-import static madmike.numismaticgts.net.packets.TradePacketIds.REMOVE_OFFER;
+import static madmike.numismaticgts.net.TradePacketIds.REMOVE_OFFER;
 
 public class RemoveOfferC2SPacket {
     public static void send(UUID offerId) {

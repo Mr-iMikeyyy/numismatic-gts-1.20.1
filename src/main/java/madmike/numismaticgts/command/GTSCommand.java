@@ -25,7 +25,6 @@ import madmike.numismaticgts.NumismaticGTSComponents;
 import madmike.numismaticgts.NumismaticGTSConfig;
 import madmike.numismaticgts.components.scoreboard.PlayerNamesComponent;
 import madmike.numismaticgts.data.Offer;
-import madmike.numismaticgts.net.TradeScreenRefreshS2CSender;
 import madmike.numismaticgts.util.CurrencyUtil;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.item.ItemStack;

@@ -19,7 +19,7 @@
 package madmike.numismaticgts.net;
 
 import madmike.numismaticgts.NumismaticGTSComponents;
-import madmike.numismaticgts.net.packets.TradePacketIds;
+import madmike.numismaticgts.events.TradeEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 import java.util.UUID;
@@ -39,5 +39,11 @@ public class ServerReceiver {
                 NumismaticGTSComponents.OFFERS.get(server.getScoreboard()).buyOffer(offerId, player);
             });
         });
+
+        ServerPlayNetworking.registerGlobalReceiver(TradePacketIds.CLIENT_READY, (server, player, handler, buf, responseSender) -> {
+            server.execute(() -> TradeEvents.onClientReady(player, server));
+        });
+
+
     }
 }

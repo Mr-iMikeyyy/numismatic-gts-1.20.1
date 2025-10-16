@@ -23,7 +23,7 @@ import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import madmike.numismaticgts.NumismaticGTSComponents;
 import madmike.numismaticgts.data.Offer;
-import madmike.numismaticgts.net.TradeScreenRefreshS2CSender;
+import madmike.numismaticgts.net.packets.TradeScreenRefreshS2CSender;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;

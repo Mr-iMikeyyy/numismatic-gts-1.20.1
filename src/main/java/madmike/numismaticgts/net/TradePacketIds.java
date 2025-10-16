@@ -16,20 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package madmike.numismaticgts.net.packets;
+package madmike.numismaticgts.net;
 
-import io.netty.buffer.Unpooled;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.network.PacketByteBuf;
+import madmike.numismaticgts.NumismaticGTS;
+import net.minecraft.util.Identifier;
 
-import java.util.UUID;
+public class TradePacketIds {
+    public static final Identifier REMOVE_OFFER = new Identifier(NumismaticGTS.MOD_ID, "remove_offer");
+    public static final Identifier BUY_OFFER = new Identifier(NumismaticGTS.MOD_ID, "buy_offer");
+    public static final Identifier CLIENT_READY = new Identifier("numismatic-gts", "client_ready");
 
-import static madmike.numismaticgts.net.TradePacketIds.BUY_OFFER;
-
-public class BuyOfferC2SPacket {
-    public static void send(UUID offerId) {
-        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-        buf.writeUuid(offerId);
-        ClientPlayNetworking.send(BUY_OFFER, buf);
-    }
+    public static final Identifier REFRESH_TRADE_SCREEN = new Identifier(NumismaticGTS.MOD_ID, "refresh_trades");
 }

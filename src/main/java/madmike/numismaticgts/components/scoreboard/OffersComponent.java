@@ -19,6 +19,7 @@
 package madmike.numismaticgts.components.scoreboard;
 
 import com.glisco.numismaticoverhaul.ModComponents;
+import com.glisco.numismaticoverhaul.currency.CurrencyComponent;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import madmike.numismaticgts.NumismaticGTSComponents;
@@ -68,10 +69,38 @@ public class OffersComponent implements ComponentV3, AutoSyncedComponent {
     }
 
     /**
-     * Remove an offer by offerId (returns true if removed).
+     * Remove an offer by offerId (used when an item is SOLD).
+     * Does NOT return the item to the seller.
      */
     public void removeOffer(UUID offerId) {
-        var found = findOfferWithOwner(offerId);
+        OwnerOffer found = findOfferWithOwner(offerId);
+        if (found == null) return;
+
+        UUID sellerId = found.sellerId();
+        Offer offer = found.offer();
+
+        // Clear the stored item stack to avoid desync/ghost copies
+        offer.getItem().setCount(0);
+
+        // Remove from seller's list; drop empty lists
+        List<Offer> list = offers.get(sellerId);
+        if (list != null) {
+            list.removeIf(o -> o.getOfferId().equals(offerId));
+            if (list.isEmpty()) offers.remove(sellerId);
+        }
+
+        // Sync the scoreboard component to all clients
+        NumismaticGTSComponents.OFFERS.sync(provider);
+
+        // Notify clients to refresh the UI
+        TradeScreenRefreshS2CSender.sendRefreshToAll(server);
+    }
+
+    /**
+     * Retract an offer by offerId (returns true if removed).
+     */
+    public void retractOffer(UUID offerId) {
+        OwnerOffer found = findOfferWithOwner(offerId);
         if (found == null) return;
 
         UUID sellerId = found.sellerId();
@@ -96,7 +125,7 @@ public class OffersComponent implements ComponentV3, AutoSyncedComponent {
 
     /** Buy an offer by id. Handles payment, item transfer, and seller credit/offline sales. */
     public void buyOffer(UUID offerId, ServerPlayerEntity buyer) {
-        var found = findOfferWithOwner(offerId);
+        OwnerOffer found = findOfferWithOwner(offerId);
         if (found == null) {
             buyer.sendMessage(Text.literal("Offer not found.").formatted(Formatting.RED), false);
             return;
@@ -105,7 +134,7 @@ public class OffersComponent implements ComponentV3, AutoSyncedComponent {
         UUID sellerId = found.sellerId();
         Offer offer = found.offer();
         long price = offer.getPrice();
-        var buyerWallet = ModComponents.CURRENCY.get(buyer);
+        CurrencyComponent buyerWallet = ModComponents.CURRENCY.get(buyer);
 
         if (buyerWallet.getValue() < price) {
             buyer.sendMessage(Text.literal("You can't afford this").formatted(Formatting.RED), false);

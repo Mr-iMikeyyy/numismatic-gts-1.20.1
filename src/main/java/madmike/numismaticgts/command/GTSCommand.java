@@ -34,6 +34,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
 
 import java.util.Collections;
 import java.util.List;
@@ -224,7 +225,7 @@ public class GTSCommand {
 
         // Remove the held stack from the player's hand and list it
         ItemStack listedItem = stack.copy();
-        player.getMainHandStack().setCount(0);
+        player.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
 
         Offer offer = new Offer(
                 UUID.randomUUID(),

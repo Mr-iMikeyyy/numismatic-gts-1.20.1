@@ -29,7 +29,7 @@ public class ServerReceiver {
         ServerPlayNetworking.registerGlobalReceiver(TradePacketIds.REMOVE_OFFER, (server, player, handler, buf, responseSender) -> {
             UUID offerId = buf.readUuid();
             server.execute(() -> {
-                NumismaticGTSComponents.OFFERS.get(server.getScoreboard()).removeOffer(offerId);
+                NumismaticGTSComponents.OFFERS.get(server.getScoreboard()).retractOffer(offerId);
             });
         });
 

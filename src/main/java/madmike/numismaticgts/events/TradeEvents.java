@@ -23,16 +23,12 @@ import com.glisco.numismaticoverhaul.currency.CurrencyComponent;
 import madmike.numismaticgts.NumismaticGTSComponents;
 import madmike.numismaticgts.components.scoreboard.OfflineSalesComponent;
 import madmike.numismaticgts.util.CurrencyUtil;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.UUID;
-
-import static madmike.numismaticgts.net.TradePacketIds.CLIENT_READY;
 
 public class TradeEvents {
     public static void onClientReady(ServerPlayerEntity player, MinecraftServer server) {

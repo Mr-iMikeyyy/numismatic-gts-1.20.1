@@ -22,9 +22,13 @@ import com.glisco.numismaticoverhaul.ModComponents;
 import com.glisco.numismaticoverhaul.currency.CurrencyComponent;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import madmike.numismaticgts.NumismaticGTS;
 import madmike.numismaticgts.NumismaticGTSComponents;
 import madmike.numismaticgts.data.Offer;
 import madmike.numismaticgts.net.packets.TradeScreenRefreshS2CSender;
+import madmike.skirmish.logic.Skirmish;
+import madmike.skirmish.logic.SkirmishManager;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -125,6 +129,19 @@ public class OffersComponent implements ComponentV3, AutoSyncedComponent {
 
     /** Buy an offer by id. Handles payment, item transfer, and seller credit/offline sales. */
     public void buyOffer(UUID offerId, ServerPlayerEntity buyer) {
+
+        NumismaticGTS.LOGGER.info("[NGTS] Checking for Skirmish");
+        if (FabricLoader.getInstance().isModLoaded("vs-skirmish")) {
+            NumismaticGTS.LOGGER.info("[NGTS] Found Skirmish");
+            Skirmish skirmish = SkirmishManager.INSTANCE.getCurrentSkirmish();
+            if (skirmish != null && skirmish.isPlayerInSkirmish(buyer.getUuid())) {
+                NumismaticGTS.LOGGER.info("[NGTS] Player in Skirmish?");
+                buyer.sendMessage(Text.literal("You cannot buy items while in a skirmish.").formatted(Formatting.RED), false);
+                return;
+            }
+        }
+        NumismaticGTS.LOGGER.info("[NGTS] Passed Skirmish Check");
+
         OwnerOffer found = findOfferWithOwner(offerId);
         if (found == null) {
             buyer.sendMessage(Text.literal("Offer not found.").formatted(Formatting.RED), false);

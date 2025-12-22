@@ -21,12 +21,20 @@ package madmike.numismaticgts.command;
 import com.glisco.numismaticoverhaul.ModComponents;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.tiviacz.travelersbackpack.items.TravelersBackpackItem;
+import madmike.numismaticgts.NumismaticGTS;
 import madmike.numismaticgts.NumismaticGTSComponents;
 import madmike.numismaticgts.NumismaticGTSConfig;
 import madmike.numismaticgts.components.scoreboard.PlayerNamesComponent;
 import madmike.numismaticgts.data.Offer;
 import madmike.numismaticgts.util.CurrencyUtil;
+import madmike.skirmish.logic.Skirmish;
+import madmike.skirmish.logic.SkirmishManager;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.block.Block;
+import net.minecraft.block.ShulkerBoxBlock;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;
@@ -70,7 +78,6 @@ public class GTSCommand {
                     return 0;
                 }
 
-                // If your component class is still named UnlockedStoreSlotsComponent, swap the type below.
                 var unlockedSlotsComponent = NumismaticGTSComponents.STORE_SLOTS.get(player);
                 int unlockedSlots = unlockedSlotsComponent.getUnlockedSlots();
 
@@ -208,6 +215,33 @@ public class GTSCommand {
             player.sendMessage(Text.literal("You're not holding any item to sell.").formatted(Formatting.RED), false);
             return 0;
         }
+
+        if (FabricLoader.getInstance().isModLoaded("travelersbackpack")) {
+            if (stack.getItem() instanceof TravelersBackpackItem) {
+                player.sendMessage(Text.literal("Not allowed to sell back packs.").formatted(Formatting.RED), false);
+                return 0;
+            }
+        }
+
+        if (stack.getItem() instanceof BlockItem blockItem) {
+            Block block = blockItem.getBlock();
+            if (block instanceof ShulkerBoxBlock) {
+                player.sendMessage(Text.literal("Not allowed to sell shulker boxes.").formatted(Formatting.RED), false);
+                return 0;
+            }
+        }
+
+        NumismaticGTS.LOGGER.info("[NGTS] Checking for skirmish");
+        if (FabricLoader.getInstance().isModLoaded("vs-skirmish")) {
+            NumismaticGTS.LOGGER.info("[NGTS] Found skirmish");
+            Skirmish skirmish = SkirmishManager.INSTANCE.getCurrentSkirmish();
+            if (skirmish != null && skirmish.isPlayerInSkirmish(player.getUuid())) {
+                NumismaticGTS.LOGGER.info("[NGTS] Player in Skirmish?");
+                player.sendMessage(Text.literal("You cannot sell items while in a skirmish.").formatted(Formatting.RED), false);
+                return 0;
+            }
+        }
+        NumismaticGTS.LOGGER.info("[NGTS] Skirmish check passed");
 
         var offersComp = NumismaticGTSComponents.OFFERS.get(server.getScoreboard());
 

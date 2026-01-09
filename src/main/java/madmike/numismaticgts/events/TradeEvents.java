@@ -20,7 +20,7 @@ package madmike.numismaticgts.events;
 
 import com.glisco.numismaticoverhaul.ModComponents;
 import com.glisco.numismaticoverhaul.currency.CurrencyComponent;
-import madmike.numismaticgts.NumismaticGTSComponents;
+import madmike.numismaticgts.components.NumismaticGTSComponents;
 import madmike.numismaticgts.components.scoreboard.OfflineSalesComponent;
 import madmike.numismaticgts.util.CurrencyUtil;
 import net.minecraft.server.MinecraftServer;

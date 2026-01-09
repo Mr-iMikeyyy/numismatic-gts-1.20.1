@@ -1,7 +1,7 @@
 package madmike.numismaticgts;
 
+import madmike.config.NumismaticGTSConfig;
 import madmike.numismaticgts.command.GTSCommand;
-import madmike.numismaticgts.events.TradeEvents;
 import madmike.numismaticgts.net.ServerReceiver;
 
 import net.fabricmc.api.ModInitializer;

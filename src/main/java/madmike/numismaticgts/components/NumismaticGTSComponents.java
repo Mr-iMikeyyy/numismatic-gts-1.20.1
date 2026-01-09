@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package madmike.numismaticgts;
+package madmike.numismaticgts.components;
 
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
@@ -25,6 +25,7 @@ import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
 import dev.onyxstudios.cca.api.v3.scoreboard.ScoreboardComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.scoreboard.ScoreboardComponentInitializer;
+import madmike.numismaticgts.NumismaticGTS;
 import madmike.numismaticgts.components.player.StoreSlotsComponent;
 import madmike.numismaticgts.components.scoreboard.OffersComponent;
 import madmike.numismaticgts.components.scoreboard.OfflineSalesComponent;

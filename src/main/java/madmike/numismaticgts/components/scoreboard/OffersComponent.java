@@ -23,7 +23,7 @@ import com.glisco.numismaticoverhaul.currency.CurrencyComponent;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import madmike.numismaticgts.NumismaticGTS;
-import madmike.numismaticgts.NumismaticGTSComponents;
+import madmike.numismaticgts.components.NumismaticGTSComponents;
 import madmike.numismaticgts.data.Offer;
 import madmike.numismaticgts.net.packets.TradeScreenRefreshS2CSender;
 import madmike.skirmish.logic.Skirmish;

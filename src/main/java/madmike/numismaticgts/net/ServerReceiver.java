@@ -18,7 +18,7 @@
 
 package madmike.numismaticgts.net;
 
-import madmike.numismaticgts.NumismaticGTSComponents;
+import madmike.numismaticgts.components.NumismaticGTSComponents;
 import madmike.numismaticgts.events.TradeEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 

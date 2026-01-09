@@ -63,7 +63,7 @@ dependencies {
 
 	modImplementation "maven.modrinth:numismatic-overhaul:0.2.14+1.20"
 
-	modImplementation(files("libs/vs-skirmish-0.1.37.jar"))
+	modImplementation(files("libs/cc-1.0.8.jar"))
 
 	modImplementation(files("libs/travelersbackpack-fabric-1.20.1-9.1.41.jar"))
 

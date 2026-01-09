@@ -18,25 +18,22 @@
 
 package madmike.numismaticgts.command;
 
-import com.glisco.numismaticoverhaul.ModComponents;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.tiviacz.travelersbackpack.items.TravelersBackpackItem;
-import madmike.numismaticgts.NumismaticGTS;
-import madmike.numismaticgts.NumismaticGTSComponents;
-import madmike.numismaticgts.NumismaticGTSConfig;
-import madmike.numismaticgts.components.scoreboard.PlayerNamesComponent;
+import madmike.cc.logic.BusyPlayers;
+import madmike.numismaticgts.command.exe.StatsExe;
+import madmike.numismaticgts.command.exe.TopExe;
+import madmike.numismaticgts.command.exe.UpgradeExe;
+import madmike.numismaticgts.components.NumismaticGTSComponents;
 import madmike.numismaticgts.data.Offer;
 import madmike.numismaticgts.util.CurrencyUtil;
-import madmike.skirmish.logic.Skirmish;
-import madmike.skirmish.logic.SkirmishManager;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -45,8 +42,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static net.minecraft.server.command.CommandManager.argument;
@@ -62,8 +57,8 @@ public class GTSCommand {
                     player.sendMessage(Text.literal("""
                             §6====== Trade Command Help ======
                             
-                            §e/trade upgrade §7- Increase the max slots available for you to sell
-                            §e/trade profile §7- View your seller profile
+                            §e/trade upgrade §7- Increase the max slots and price available for you to sell
+                            §e/trade stats §7- View your seller stats
                             §e/trade top §7- View the top performing sellers
                             §e/trade sell <gold> <silver> <bronze> §7- Sell the item you are holding
                             """), false);
@@ -71,92 +66,17 @@ public class GTSCommand {
                 return 1;
             });
 
-            tradeCommand.then(literal("upgrade").executes(ctx -> {
-                ServerPlayerEntity player = ctx.getSource().getPlayer();
-                if (player == null) {
-                    ctx.getSource().sendError(Text.literal("Only players can use this command."));
-                    return 0;
-                }
+            tradeCommand.then(literal("upgrade")
+                    .executes(UpgradeExe::execute)
+            );
 
-                var unlockedSlotsComponent = NumismaticGTSComponents.STORE_SLOTS.get(player);
-                int unlockedSlots = unlockedSlotsComponent.getUnlockedSlots();
+            tradeCommand.then(literal("stats")
+                    .executes(StatsExe::execute)
+            );
 
-                if (unlockedSlots >= NumismaticGTSConfig.maxStoreSlotsPerPlayer) {
-                    player.sendMessage(Text.literal("You’ve reached the maximum number of unlocked slots.").formatted(Formatting.GRAY), false);
-                    return 0;
-                }
-
-                var wallet = ModComponents.CURRENCY.get(player);
-                int cost = (unlockedSlots + 1) * 10_000; // 1 gold = 10,000 bronze
-
-                if (wallet.getValue() >= cost) {
-                    wallet.modify(-cost);
-                    unlockedSlotsComponent.increment(1);
-                    player.sendMessage(Text.literal("Upgraded your available sell slots by 1! It is now " + (unlockedSlots + 1)).formatted(Formatting.GOLD), false);
-                } else {
-                    var needed = CurrencyUtil.fromTotalBronze(cost);
-                    player.sendMessage(
-                            Text.literal("Not enough funds to upgrade. You need G: " + needed.gold()
-                                    + ", S: " + needed.silver()
-                                    + ", B: " + needed.bronze()).formatted(Formatting.RED),
-                            false
-                    );
-                }
-                return 1;
-            }));
-
-            tradeCommand.then(literal("profile").executes(ctx -> {
-                ServerPlayerEntity player = ctx.getSource().getPlayer();
-                if (player == null) {
-                    ctx.getSource().sendError(Text.literal("Only players can use this command."));
-                    return 0;
-                }
-
-                long total = NumismaticGTSComponents.TOTAL_SALES
-                        .get(ctx.getSource().getServer().getScoreboard())
-                        .getSales(player.getUuid());
-
-                var coins = CurrencyUtil.fromTotalBronze(total);
-                player.sendMessage(Text.literal(
-                        "Your total sales are: G: " + coins.gold() + ", S: " + coins.silver() + ", B: " + coins.bronze() + "."
-                ), false);
-
-                return 1;
-            }));
-
-            tradeCommand.then(literal("top").executes(ctx -> {
-                ServerPlayerEntity player = ctx.getSource().getPlayer();
-                if (player == null) {
-                    ctx.getSource().sendError(Text.literal("Only players can use this command"));
-                    return 0;
-                }
-
-                Scoreboard sb = player.getScoreboard();
-
-                var salesComp = NumismaticGTSComponents.TOTAL_SALES.get(sb);
-
-                List<Map.Entry<UUID, Long>> top = salesComp.getAllSales().entrySet().stream()
-                        .sorted(Map.Entry.<UUID, Long>comparingByValue().reversed())
-                        .limit(10)
-                        .toList();
-
-                if (top.isEmpty()) {
-                    player.sendMessage(Text.literal("No sellers found."), false);
-                    return 1;
-                }
-
-                PlayerNamesComponent pnc = NumismaticGTSComponents.PLAYER_NAMES.get(sb);
-
-                player.sendMessage(Text.literal("Top 10 Sellers:"), false);
-                for (int i = 0; i < top.size(); i++) {
-                    var entry = top.get(i);
-                    String name = pnc.resolve(entry.getKey());
-                    String priceStr = CurrencyUtil.formatPrice(entry.getValue()).getString();
-                    String line = String.format("%d. %s - %s", i + 1, name, priceStr);
-                    player.sendMessage(Text.literal(line), false);
-                }
-                return 1;
-            }));
+            tradeCommand.then(literal("top")
+                    .executes(TopExe::execute)
+            );
 
             tradeCommand.then(literal("sell")
                     .then(argument("gold", IntegerArgumentType.integer(0))
@@ -205,6 +125,12 @@ public class GTSCommand {
     }
 
     public static int handleSellCommand(ServerPlayerEntity player, long price, MinecraftServer server) {
+
+        if (BusyPlayers.isBusy(player.getUuid())) {
+            player.sendMessage(Text.literal("You are busy doing something").formatted(Formatting.RED));
+            return 0;
+        }
+
         if (price <= 0) {
             player.sendMessage(Text.literal("Price needs to be larger than 0").formatted(Formatting.RED), false);
             return 0;
@@ -230,18 +156,6 @@ public class GTSCommand {
                 return 0;
             }
         }
-
-        NumismaticGTS.LOGGER.info("[NGTS] Checking for skirmish");
-        if (FabricLoader.getInstance().isModLoaded("vs-skirmish")) {
-            NumismaticGTS.LOGGER.info("[NGTS] Found skirmish");
-            Skirmish skirmish = SkirmishManager.INSTANCE.getCurrentSkirmish();
-            if (skirmish != null && skirmish.isPlayerInSkirmish(player.getUuid())) {
-                NumismaticGTS.LOGGER.info("[NGTS] Player in Skirmish?");
-                player.sendMessage(Text.literal("You cannot sell items while in a skirmish.").formatted(Formatting.RED), false);
-                return 0;
-            }
-        }
-        NumismaticGTS.LOGGER.info("[NGTS] Skirmish check passed");
 
         var offersComp = NumismaticGTSComponents.OFFERS.get(server.getScoreboard());
 

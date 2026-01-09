@@ -22,10 +22,10 @@
 			"madmike.numismaticgts.NumismaticGTSClient"
 		],
 		"cardinal-components-scoreboard": [
-			"madmike.numismaticgts.NumismaticGTSComponents"
+			"madmike.numismaticgts.components.NumismaticGTSComponents"
 		],
 		"cardinal-components-entity": [
-			"madmike.numismaticgts.NumismaticGTSComponents"
+			"madmike.numismaticgts.components.NumismaticGTSComponents"
 		]
 	},
 	"depends": {

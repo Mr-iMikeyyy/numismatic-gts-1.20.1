@@ -27,7 +27,7 @@ import io.wispforest.owo.ui.container.Containers;
 import io.wispforest.owo.ui.container.FlowLayout;
 import io.wispforest.owo.ui.container.ScrollContainer;
 import io.wispforest.owo.ui.core.*;
-import madmike.numismaticgts.NumismaticGTSComponents;
+import madmike.numismaticgts.components.NumismaticGTSComponents;
 import madmike.numismaticgts.components.scoreboard.PlayerNamesComponent;
 import madmike.numismaticgts.data.Offer;
 import madmike.numismaticgts.net.packets.BuyOfferC2SPacket;

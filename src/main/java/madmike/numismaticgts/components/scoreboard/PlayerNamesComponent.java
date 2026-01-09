@@ -20,7 +20,7 @@ package madmike.numismaticgts.components.scoreboard;
 
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
-import madmike.numismaticgts.NumismaticGTSComponents;
+import madmike.numismaticgts.components.NumismaticGTSComponents;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.PacketByteBuf;
